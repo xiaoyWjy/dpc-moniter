@@ -1,0 +1,23 @@
+name: 保活（防止定时任务被 GitHub 自动停用）
+
+# GitHub 会在仓库 60 天没有任何提交时自动停用 schedule。
+# 每月产生一次空提交，保证定时任务一直活着。
+on:
+  schedule:
+    - cron: "0 3 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 空提交
+        run: |
+          git config user.name "bwc-monitor-bot"
+          git config user.email "bwc-monitor-bot@users.noreply.github.com"
+          git commit --allow-empty -m "chore: 保活 $(date -u '+%Y-%m-%d')"
+          git push

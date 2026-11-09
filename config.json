@@ -1,0 +1,40 @@
+{
+  "sites": [
+    {
+      "name": "通知公告",
+      "url": "https://bwc.nbt.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=1175",
+      "pages": 2
+    },
+    {
+      "name": "新闻动态",
+      "url": "https://bwc.nbt.edu.cn/list.jsp?urltype=tree.TreeTempUrl&wbtreeid=1179",
+      "pages": 1
+    }
+  ],
+
+  "keywords": ["废旧", "清理", "电动自行车", "电动车", "通行证", "非机动车"],
+  "exclude": [],
+  "match_mode": "any",
+  "match_body": false,
+
+  "windows_toast": false,
+  "notify": {
+    "pushplus_token": "",
+    "serverchan_key": "",
+    "bark_url": "",
+    "feishu_webhook": "",
+    "wecom_webhook": "",
+    "dingtalk_webhook": "",
+    "dingtalk_secret": "",
+    "telegram": { "bot_token": "", "chat_id": "" },
+    "generic_webhook": "",
+    "smtp": {
+      "host": "",
+      "port": 465,
+      "ssl": true,
+      "user": "",
+      "password": "",
+      "to": []
+    }
+  }
+}

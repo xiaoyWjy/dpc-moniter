@@ -1,0 +1,56 @@
+name: 安全保卫部公告监控
+
+on:
+  schedule:
+    # 每 30 分钟一次（GitHub 的 cron 是 UTC，*/30 表示每半点/整点）
+    - cron: "*/30 * * * *"
+  # 也可以在 Actions 页面手动点一下测试
+  workflow_dispatch:
+
+# 需要写权限，才能把已读记录 state.json 提交回仓库
+permissions:
+  contents: write
+
+# 同一时间只允许一个实例，避免两次运行抢着改 state.json
+concurrency:
+  group: bwc-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 取出仓库
+        uses: actions/checkout@v4
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 检查新公告
+        env:
+          BWC_DINGTALK_WEBHOOK: ${{ secrets.BWC_DINGTALK_WEBHOOK }}
+          BWC_DINGTALK_SECRET: ${{ secrets.BWC_DINGTALK_SECRET }}
+        run: |
+          set +e
+          python monitor.py --verbose
+          code=$?
+          echo "monitor exit code: $code"
+          # 0=无命中，2=有命中（正常，不该标红），其它才是真失败
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then
+            exit "$code"
+          fi
+
+      - name: 把已读记录提交回仓库
+        run: |
+          git config user.name "bwc-monitor-bot"
+          git config user.email "bwc-monitor-bot@users.noreply.github.com"
+          git add -A state.json hits.log latest.html
+          if git diff --cached --quiet; then
+            echo "没有变化，不用提交"
+          else
+            git commit -m "chore: 更新已读记录 $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
