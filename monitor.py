@@ -464,6 +464,10 @@ def run(mode: str, verbose: bool, list_n: int = 10) -> int:
         state["seen"].setdefault(site["name"], [])
         state["seen"][site["name"]].extend(it["id"] for it in new)
 
+    if errors and errors == len(cfg["sites"]):
+        log(f"所有 {errors} 个栏目都抓取失败，本次不做任何记录（网络或站点不可达）。")
+        return 1
+
     if mode == "list":
         for it in all_items[:list_n]:
             print(f"  {it['date']}  {it['title']}\n             {it['url']}")
