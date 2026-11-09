@@ -1,5 +1,24 @@
 # 浙大宁波理工学院安全保卫部 · 公告监控（云端版）
 
+> ## ⛔ 结论先说：这个云端版在 2026-11-09 实测确认「不可用」，workflow 已禁用
+>
+> `bwc.nbt.edu.cn` **只有校内网地址，没有公网 DNS 记录**：
+>
+> ```
+> 校内解析   bwc.nbt.edu.cn -> 10.80.92.85      （私有地址，只在校园网内）
+> 公网 DoH   bwc.nbt.edu.cn -> NXDOMAIN (Status=3)  阿里/Cloudflare/Google 一致
+> 对照       www.nbt.edu.cn -> 60.190.44.182    （官网有公网记录）
+> ```
+>
+> GitHub Actions 运行在 Azure 海外机房，DNS 直接返回
+> `<urlopen error [Errno -2] Name or service not known>`，抓不到任何条目。
+> 这不是 GitHub 的问题——**换阿里云、腾讯云、Cloudflare 一样抓不到**，因为域名在公网根本不存在。
+>
+> 2026-11-09 12:45 UTC 那次运行日志已证实（`check/4_检查新公告.txt`）。
+> 只有在校园网内的设备上跑才能访问，见本机版 `bwc-monitor`。
+>
+> 保留此仓库仅作参考（代码、workflow 写法、API 写 Secret 的脚本都还能复用）。
+
 在 GitHub Actions 上每 30 分钟检查一次安全保卫部网站，发现含有关键词的新公示就推送到钉钉群。
 **不需要自己的电脑开机**，也不需要服务器。
 
